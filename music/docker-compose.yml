@@ -11,7 +11,7 @@ services:
       context: ./backend/upload
       dockerfile: ./Dockerfile
     ports:
-      - ${HTTP_PORT}:${HTTP_PORT}
+      - ${UPLOAD_HTTP_PORT}:${UPLOAD_HTTP_PORT}
     depends_on:
       - postgres
     networks:
@@ -21,16 +21,16 @@ services:
     restart: always
     container_name: music_db
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${MUSIC_PG_NAME}
+      POSTGRES_USER: ${MUSIC_PG_USER}
+      POSTGRES_PASSWORD: ${MUSIC_PG_PASSWORD}
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
       - pgvolume:/var/lib/postgresql/data
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - ${MUSIC_PG_PORT}:${MUSIC_PG_PORT}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U ${MUSIC_PG_USER} -d ${MUSIC_PG_NAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -39,7 +39,7 @@ services:
         - isolation-network
   migrate:
     image: migrate/migrate
-    entrypoint: ["sh", "-c", "migrate -path /migrations -database postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable up"]
+    entrypoint: ["sh", "-c", "migrate -path /migrations -database postgres://${MUSIC_PG_USER}:${MUSIC_PG_PASSWORD}@${MUSIC_PG_HOST}:${MUSIC_PG_PORT}/${MUSIC_PG_NAME}?sslmode=disable up"]
     volumes:
       - ./backend/db/postgres/migrations:/migrations
     depends_on:
