@@ -7,28 +7,45 @@ import (
 type Config struct {
 	HTTPServer
 	Postgres
+	Routes
 }
 
 type HTTPServer struct {
-	Host string `env:"HTTP_HOST" env-default:"localhost"`
-	Port string `env:"HTTP_PORT" env-default:"8010"`
+	Host string `env:"UPLOAD_HTTP_HOST" env-default:"localhost"`
+	Port string `env:"UPLOAD_HTTP_PORT" env-default:"8010"`
 }
 
 type Postgres struct {
-	Name     string `env:"DB_NAME" env-default:"x-pltfrm/music"`
-	User     string `env:"DB_USER" env-default:"postgres"`
-	Password string `env:"DB_PASSWORD" env-default:"password"`
-	Host     string `env:"DB_HOST" env-default:"localhost"`
-	Port     string `env:"DB_PORT" env-defaukt:"5432"`
+	Name     string `env:"MUSIC_PG_NAME" env-default:"x-pltfrm/music"`
+	User     string `env:"MUSIC_PG_USER" env-default:"postgres"`
+	Password string `env:"MUSIC_PG_PASSWORD" env-default:"password"`
+	Host     string `env:"MUSIC_PG_HOST" env-default:"localhost"`
+	Port     string `env:"MUSIC_PG_PORT" env-defaukt:"5432"`
+}
+
+type Routes struct {
+	HTTP `yaml:"http" env-required:"true"`
+}
+
+type HTTP struct {
+	V1 `yaml:"v1" env-required:"true"`
+}
+
+type V1 struct {
+	Root  string `yaml:"root" env-default:"/v1"`
+	Hello string `yaml:"hellp" env-default:"/hello"`
 }
 
 func Load() (*Config, error) {
 	var cfg Config
 
-	err := cleanenv.ReadEnv(&cfg)
-	if err != nil {
+	if err := cleanenv.ReadEnv(&cfg); err != nil {
 		return nil, err
 	}
+
+	//if err := cleanenv.ReadConfig("./config/routes.yaml", &cfg); err != nil {
+	//	return nil, err
+	//}
 
 	return &cfg, nil
 }

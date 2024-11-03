@@ -1,5 +1,3 @@
-include .env
-
 MG_PATH=../db/postgres/migrations
 
 ifeq (${OS}, Windows_NT)
@@ -12,8 +10,11 @@ endif
 
 PG_URL=postgres://${PG_USER}:${PG_PASSWORD}@${PG_HOST}:${PG_PORT}/${PG_NAME}?sslmode=disable
 
-run:
-	go run cmd/main.go
+run: build
+	./main
+
+build:
+	go build -C ./cmd -o ./../main
 
 new_migration:
 	migrate create -ext sql -dir ${MG_PATH} -seq ${name}

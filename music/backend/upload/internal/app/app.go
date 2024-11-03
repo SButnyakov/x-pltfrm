@@ -12,6 +12,7 @@ import (
 	"time"
 	"x-pltfrm/music/upload/config"
 	"x-pltfrm/music/upload/internal/db"
+	v1 "x-pltfrm/music/upload/internal/http/v1"
 	"x-pltfrm/music/upload/pkg/logger"
 )
 
@@ -35,8 +36,10 @@ func Run() {
 	log.Info("Database connected.")
 	defer db.Close()
 
+	// Server init
 	httpServer := http.Server{
-		Addr: fmt.Sprintf("%s:%s", cfg.HTTPServer.Host, cfg.HTTPServer.Port),
+		Addr:    fmt.Sprintf("%s:%s", cfg.HTTPServer.Host, cfg.HTTPServer.Port),
+		Handler: v1.Router(cfg.Routes),
 	}
 
 	// Startup

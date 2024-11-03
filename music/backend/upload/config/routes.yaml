@@ -1,0 +1,4 @@
+htpp:
+  v1:
+    root: /v1
+    hello: /hello

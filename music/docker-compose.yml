@@ -1,3 +1,5 @@
+version: "3"
+
 networks:
   isolation-network:
     driver: bridge
@@ -13,7 +15,8 @@ services:
     ports:
       - ${UPLOAD_HTTP_PORT}:${UPLOAD_HTTP_PORT}
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - isolation-network
   postgres:
@@ -43,7 +46,8 @@ services:
     volumes:
       - ./backend/db/postgres/migrations:/migrations
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - isolation-network
 
